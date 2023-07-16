@@ -9,13 +9,12 @@ const contactsPath = path.join("models", "contacts.json");
  * List contacts
  */
 exports.listContacts = tryCatchWrapper(async (req, res, next) => {
+  const contacts = JSON.parse(await fs.readFile(contactsPath));
 
-    const contacts = JSON.parse(await fs.readFile(contactsPath));
-
-    res.status(200).json({
-      msg: "Succes",
-      contacts,
-    });
+  res.status(200).json({
+    msg: "Succes",
+    contacts,
+  });
 });
 /**
  * Get contact by id
@@ -31,11 +30,6 @@ exports.getContactById = tryCatchWrapper(async (req, res) => {
     res.status(200).json({
       msg: "Succes",
       contact: contactById,
-    });
-  }
-  if (!contactById) {
-    res.status(404).json({
-      msg: "Not found",
     });
   }
 });
@@ -66,12 +60,11 @@ exports.removeContact = tryCatchWrapper(async (req, res) => {
  * Add contact
  */
 exports.addContact = tryCatchWrapper(async (req, res) => {
-  const { name, email, phone } = req.body;
-
   const { error, value } = validContacts.createValidCotacts(req.body);
-  console.log("Validator".yellow, error, value);
 
-  if (error) throw new AppError(400, "Missing required name field");
+  if (error) throw new AppError(400, `The field ${error.message}`);
+
+  const { name, email, phone } = value;
 
   const contacts = JSON.parse(await fs.readFile(contactsPath));
 
@@ -95,7 +88,11 @@ exports.addContact = tryCatchWrapper(async (req, res) => {
  */
 exports.updateContact = tryCatchWrapper(async (req, res) => {
   const { id } = req.contact;
-  const { name, email, phone } = req.body;
+  const { error, value } = validContacts.createValidCotacts(req.body);
+  
+  if (error) throw new AppError(400, `The field ${error.message}`);
+
+  const { name, email, phone } = value;
 
   const contacts = JSON.parse(await fs.readFile(contactsPath));
 

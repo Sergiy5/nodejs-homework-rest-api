@@ -18,7 +18,7 @@ exports.checkContactId = tryCatchWrapper(async (req, res, next) => {
 
   if (!contact) {
     return res.status(404).json({
-      message: "User does not exist",
+      message: "Not found",
     });
   }
   req.contact = contact;

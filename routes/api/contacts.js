@@ -15,7 +15,7 @@ const router = express.Router()
 router.get("/", listContacts);
 router.post("/", addContact);
 router.get("/:id", checkContactId, getContactById);
-router.patch("/:id", checkContactId, updateContact);
+router.put("/:id", checkContactId, updateContact);
 router.delete("/:id", checkContactId, removeContact);
 
 module.exports = router
