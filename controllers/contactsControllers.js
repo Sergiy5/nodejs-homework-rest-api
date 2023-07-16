@@ -8,20 +8,15 @@ const contactsPath = path.join("models", "contacts.json");
 /**
  * List contacts
  */
-exports.listContacts = async (req, res, next) => {
-  console.log("1");
-  try {
-    console.log("first");
+exports.listContacts = tryCatchWrapper(async (req, res, next) => {
+
     const contacts = JSON.parse(await fs.readFile(contactsPath));
 
     res.status(200).json({
       msg: "Succes",
       contacts,
     });
-  } catch (error) {
-    console.log(error);
-  }
-};
+});
 /**
  * Get contact by id
  */
@@ -76,7 +71,7 @@ exports.addContact = tryCatchWrapper(async (req, res) => {
   const { error, value } = validContacts.createValidCotacts(req.body);
   console.log("Validator".yellow, error, value);
 
-  if (error) throw new AppError(400, "Invalid contats data");
+  if (error) throw new AppError(400, "Missing required name field");
 
   const contacts = JSON.parse(await fs.readFile(contactsPath));
 
