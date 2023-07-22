@@ -1,23 +1,52 @@
 const express = require('express')
-const logger = require('morgan')
+const morgan = require('morgan')
+const dotenv = require('dotenv');
 const cors = require('cors')
-
-
+const mongoose = require('mongoose')
 const app = express()
-const formatsLogger = app.get('env') === 'development' ? 'dev' : 'short'
-const contactsRouter = require('./routes/api/contacts')
 
+const envPath =
+  process.env.NODE_ENV === "production"
+    ? "./environments/production.env"
+    : "./environments/development.env";
+
+dotenv.config({ path: envPath })
+
+const formatsLogger = app.get('env') === 'development' ? 'dev' : 'short'
+
+if (process.env.NODE_ENV === 'development') app.use(morgan(formatsLogger));
+
+const contactsRouter = require('./routes/api/contacts')
+/**
+ * MONGODB CONNECTION=============================
+ */
+
+mongoose.connect(process.env.MONGO_URL).then((conn) =>
+  console.log('Mongo DB successfully connection'))
+  .catch((error) => {
+  console.log(error);
+// "1" Це статус код
+  process.exit(1);
+  })
+
+/**
+ *  MIDDLEWARSE============================
+ */
 app.use(cors())
 app.use(express.json())
-app.use(logger(formatsLogger))
 app.use('/api/contacts', contactsRouter)
-
-app.use((req, res) => {
-  res.status(404).json({ message: 'Not found' })
-})
-
+/**
+ * Not found request handler.
+ */
+app.all('*', (req, res) => {
+  res.status(404).json({ msg: 'Resource not found' })
+});
+/**
+ * Globalerror handler. Four arguments REQUIRED!!
+ */
 app.use((err, req, res, next) => {
-  res.status(err.status || 500).json({ message: err.message })
+  console.log('ERROR'.blue, err)
+  res.status(err.status || 500).json({ msg: err.message });
 })
 
 module.exports = app

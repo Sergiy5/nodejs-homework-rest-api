@@ -1,15 +1,14 @@
-const fs = require("fs").promises;
-const path = require("path");
-const { v1: uuidv1 } = require("uuid");
-const { tryCatchWrapper, validContacts, AppError } = require("../utils");
-require("colors");
+const { tryCatchWrapper } = require("../utils");
 
-const contactsPath = path.join("models", "contacts.json");
+require("colors");
+const Contact = require("../models/contactsModels");
+
 /**
- * List contacts
+ * Get list contacts
  */
-exports.listContacts = tryCatchWrapper(async (req, res, next) => {
-  const contacts = JSON.parse(await fs.readFile(contactsPath));
+exports.listContacts = tryCatchWrapper(async (req, res) => {
+  const contacts = await Contact.find();
+    // JSON.parse(await fs.readFile(contactsPath)) ;
 
   res.status(200).json({
     msg: "Succes",
@@ -17,19 +16,16 @@ exports.listContacts = tryCatchWrapper(async (req, res, next) => {
   });
 });
 /**
- * Get contact by id
+ * Get contact by ID
  */
 exports.getContactById = tryCatchWrapper(async (req, res) => {
-  let { id } = req.contact;
 
-  const contacts = JSON.parse(await fs.readFile(contactsPath));
+ const contact = await Contact.findById(req.params.id)
 
-  const contactById = (id = contacts.find((contact) => contact.id === id));
-
-  if (contactById) {
+  if (contact) {
     res.status(200).json({
       msg: "Succes",
-      contact: contactById,
+      contact: contact,
     });
   }
 });
@@ -37,82 +33,56 @@ exports.getContactById = tryCatchWrapper(async (req, res) => {
  *Remove contact
  */
 exports.removeContact = tryCatchWrapper(async (req, res) => {
-  let { id } = req.contact;
+  const { id } = req.params;
 
-  const contacts = JSON.parse(await fs.readFile(contactsPath));
-
-  const isContactExsist = contacts.find((contact) => contact.id === id);
-
-  if (isContactExsist) {
-    const filteredContacts = (id = contacts.filter(
-      (contact) => contact.id !== id
-    ));
-
-    await fs.writeFile(contactsPath, JSON.stringify(filteredContacts));
-
-    res.status(200).json({ message: "contact deleted" });
-  }
-  if (!isContactExsist) {
-    res.status(404).json({ message: "Not found" });
-  }
+  await Contact.findByIdAndDelete(id);
+  
+  res.sendStatus(204);
 });
 /**
  * Add contact
  */
 exports.addContact = tryCatchWrapper(async (req, res) => {
-  const { error, value } = validContacts.createValidCotacts(req.body);
 
-  if (error) throw new AppError(400, `The field ${error.message}`);
+  
+  const newContact = await Contact.create(req.body);
 
-  const { name, email, phone } = value;
-
-  const contacts = JSON.parse(await fs.readFile(contactsPath));
-
-  const newContact = { id: uuidv1(), name, email, phone };
-
-  const isContactExsist = contacts.find(({ id }) => id === newContact.id);
-
-  if (!isContactExsist) {
-    contacts.push(newContact);
-
-    await fs.writeFile(contactsPath, JSON.stringify(contacts));
-
-    res.status(201).json({
+  newContact.password = undefined
+    
+  res.status(201).json({
       msg: "Succes",
       contact: newContact,
     });
-  }
+  
 });
 /**
  * Update contact
  */
 exports.updateContact = tryCatchWrapper(async (req, res) => {
-  const { id } = req.contact;
-  const { error, value } = validContacts.createValidCotacts(req.body);
+   const contact = await Contact.findById(req.params.id);
   
-  if (error) throw new AppError(400, `The field ${error.message}`);
-
-  const { name, email, phone } = value;
-
-  const contacts = JSON.parse(await fs.readFile(contactsPath));
-
-  const contactForUpdate = contacts.find((contact) => contact.id === id);
-
-  if (contactForUpdate) {
-    const updatedContat = {
-      ...contactForUpdate,
-      name,
-      email,
-      phone,
-    };
-    await fs.writeFile(contactsPath, JSON.stringify(contacts));
-
+  Object.keys(req.body).forEach((key) => {
+    contact[key] = req.body[key];
+  })
+  /**
+   * Saving updated contact (the method save()!!!)
+   */
+  const updatedContact = await contact.save();
+  
     res.status(201).json({
       msg: "Succes",
-      contact: updatedContat,
+      contact: updatedContact,
+    }); 
+});
+
+exports.updateStatusContact = tryCatchWrapper(async (req, res) => {
+
+  const newStatusContact = await Contact.findByIdAndUpdate(req.params.id,
+    { favorite: req.body.favorite },
+    { new: true });
+  
+    res.status(200).json({
+      msg: "Succes",
+      contact: newStatusContact,
     });
-  }
-  if (!contactForUpdate) {
-    res.status(404).json({ message: "Not found" });
-  }
 });
