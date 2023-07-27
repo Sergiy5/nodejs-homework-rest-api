@@ -10,7 +10,7 @@ const { AppError } = require("../utils");
 exports.contactExist = async (filter) => {
   /**
    * $ne (not equel)  команда MONNGODB
-   *  для того щоб з пошуку сщнтакту виключити контакт яки ми хочемо змынити
+   *  для того щоб з пошуку контакту виключити контакт який ми хочемо змінити
    */
   const userExists = await Contact.exists(filter);
   /**
