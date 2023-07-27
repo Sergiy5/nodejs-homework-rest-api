@@ -1,6 +1,6 @@
 const { Types } = require("mongoose");
-const Contact = require("../models/contactsModels");
 const { AppError } = require("../utils");
+const Contact = require("../models/contactsModels");
 
 /**
  * Check Contact exisit
@@ -84,3 +84,17 @@ exports.addingContact = async (contact) => {
 exports.removingContact = async (id) => {
   return Contact.findByIdAndDelete(id);
 };
+/**
+ * Get all contacts
+ * @returns {Promise<Contacts[]>}
+ */
+exports.allContacts = () => Contact.find();
+
+/**
+ * Get all contacts
+ * @param {string} id 
+ * @returns {Promise<Object>} contact
+ */
+exports.getOneContactById = (id) => Contact.findById(id);
+
+

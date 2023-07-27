@@ -1,7 +1,6 @@
 const Joi = require("joi");
 const userRolesEnum = require("../cntacts/userRolesEnum");
-const PASSWORD_REGEX =
-  /^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#\\$%\\^&\\*])(?=.{8,128})/;
+
 
 exports.createValidContacts = (data) =>
   Joi.object()
@@ -10,7 +9,6 @@ exports.createValidContacts = (data) =>
       email: Joi.string().email().required(),
       phone: Joi.string().required(),
       favorite: Joi.boolean(),
-      password: Joi.string().regex(PASSWORD_REGEX),
       role: Joi.string().valid(...Object.values(userRolesEnum)),
     })
     .validate(data);
@@ -22,7 +20,8 @@ exports.updateValidContacts = (data) =>
       email: Joi.string().email(),
       phone: Joi.string(),
       favorite: Joi.boolean(),
-      password: Joi.string().regex(PASSWORD_REGEX),
       role: Joi.string().valid(...Object.values(userRolesEnum)),
     })
     .validate(data);
+
+    
