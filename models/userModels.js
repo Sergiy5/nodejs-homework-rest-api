@@ -49,7 +49,7 @@ const userSchema = new Schema(
  * Pre save  hook. Fires on Create and Save.
  */
 userSchema.pre("save", async function (next) {
-  console.log("Fires on Create and Save in model file".green);
+ 
   if (!this.isModified("password")) return next();
   
   const salt = await bcrypt.genSalt(10);
