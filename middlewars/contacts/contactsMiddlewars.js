@@ -1,6 +1,6 @@
 require("colors");
-const { AppError, tryCatchWrapper, validContacts } = require("../utils");
-const { contactExist, contactExistById } = require('../services/contactsServices');
+const { AppError, tryCatchWrapper, validContacts } = require("../../utils");
+const { contactExist, contactExistById } = require('../../services/contactsServices');
 
 
 /**

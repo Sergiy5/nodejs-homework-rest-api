@@ -1,6 +1,8 @@
 const { model, Schema } = require('mongoose');
 const bcrypt = require("bcrypt");
 const userRolesEnum = require("../cntacts/userRolesEnum");
+require("colors");
+
 
 
 
@@ -42,24 +44,30 @@ const userSchema = new Schema(
   }
 );
 
-const User = model("User", userSchema);
-
-module.exports = User; 
 
 /**
  * Pre save  hook. Fires on Create and Save.
  */
 userSchema.pre("save", async function (next) {
+  console.log("Fires on Create and Save in model file".green);
   if (!this.isModified("password")) return next();
-
+  
   const salt = await bcrypt.genSalt(10);
   this.password = await bcrypt.hash(this.password, salt);
-
+  
   next();
 });
 /**
- * Custom method mongoose to validate password. Return promise boolean------
+ * Custom method mongoose to validate password. Return promise boolean
+ * @param {string} candidate
+ * @param {string} hash
+ * @returns {Promise<boolean}
  */
-// contactSchema.methods.checkPassword = (candidate, hash) =>
-//   bcrypt.compare(candidate, hash);
-// -------------------------------------------------------------------------
+userSchema.methods.checkPassword = (candidate, hash) => {
+  console.log("candidate, hash".blue, candidate, hash);
+  bcrypt.compare(candidate, hash);
+};
+
+const User = model("User", userSchema);
+
+module.exports = User; 
