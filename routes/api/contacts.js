@@ -5,14 +5,15 @@ const { updateStatusContact} = require("../../controllers/contacts/updateStatusC
 const {getContactById} = require("../../controllers/contacts/getContactById");
 const { updateContact } = require("../../controllers/contacts/updateContact");
 const { removeContact } = require("../../controllers/contacts/removeContact");
-const { protect, allowFor } = require("../../middlewars/user/authMiddlewares");
+const { protect,
+  // allowFor
+} = require("../../middlewars/user/authMiddlewares");
 const {
   checkContactId,
   checkCreateContactData,
   checkUpdateContactData,
 } = require("../../middlewars/contacts/contactsMiddlewars");
-const userRolesEnum = require("../../cntacts/userRolesEnum");
-// const { getMe } = require("../../controllers/user/authControllers");
+// const userRolesEnum = require("../../cntacts/userRolesEnum");
 
 // const {
 //   listContacts,
@@ -32,7 +33,7 @@ router.use(protect);
  * Важлива послідовність мідлварсів
  */
 //
-router.use(allowFor(userRolesEnum.ADMIN, userRolesEnum.MODERATOR))
+// router.use(allowFor(userRolesEnum.ADMIN, userRolesEnum.MODERATOR))
 
 router.get("/", listContacts);
 router.post("/", checkCreateContactData, addContact);

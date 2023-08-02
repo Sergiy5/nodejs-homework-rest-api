@@ -11,28 +11,18 @@ const contactSchema = new Schema(
     phone: {
       type: String,
     },
+    email: {
+      type: String,
+    },
     favorite: {
       type: Boolean,
       default: false,
     },
     owner: {
       type: Schema.Types.ObjectId,
-      ref: 'user',
+      ref: "User",
+      rquired: [true, "Conatct must have an owner"],
     },
-    // email: {
-    //   type: String,
-    //   unique: [true, "Dublicated email"],
-    // },
-    // password: {
-    //   type: String,
-    //   required: [true, "Invalid password"],
-    //   select: false,
-    // },
-    // role: {
-    //   type: String,
-    //   enum: Object.values(userRolesEnum),
-    //   default: userRolesEnum.USER,
-    // },
   },
   {
     /**

@@ -1,6 +1,7 @@
 const { Types } = require("mongoose");
 const { AppError } = require("../utils");
 const Contact = require("../models/contactsModels");
+const userRolesEnum = require("../cntacts/userRolesEnum");
 
 /**
  * Check Contact exisit
@@ -65,36 +66,68 @@ exports.updatingStatusContact = async (id, status) => {
   return Contact.findByIdAndUpdate(id, { favorite: status }, { new: true });
 };
 /**
- * Add new contact
- * @param {Object} newContact 
+ * Create new contact
+ * @param {Object} contactData - new contact data
+ * @param {Object} owner - owner contact
  * @returns {Promise<new Contact>}
  */
-exports.addingContact = async (contact) => {
-  const newContact = await Contact.create(contact);
+exports.createNewContact = (contactData, owner) => {
+  const { name, email, phone, favorit } = contactData;
 
-  newContact.password = undefined;
-
-  return newContact;
+  return Contact.create({
+    name,
+    email,
+    phone,
+    favorit,
+    owner,
+  });
 };
 /**
  * Remove contact
- * @param {string} id 
+ * @param {string} id
  * @returns {Promise<Contact>}
  */
 exports.removingContact = async (id) => {
   return Contact.findByIdAndDelete(id);
 };
 /**
- * Get all contacts
- * @returns {Promise<Contacts[]>}
+ * Get all contacts from data base
+ * @param {Object} - search pagination, sort options
+ * @returns {Promise<Contact[]>}
  */
-exports.allContacts = () => Contact.find();
+exports.allContacts = async (options, user) => {
+  /**
+   * The method populate will return owner by contacts
+   * owner from model cotactSchema owner: 'User','sign'.
+   */
+  // const contacts = await Contact.find().populate('owner');
+
+  const findOptions = options.search
+    ? {
+        $or: [
+          { name: { $regex: options.search, $options: "i" } },
+          { email: { $regex: options.search, $options: "i" } },
+        ],
+      }
+    : {};
+  
+  if (options.search && user.role === userRolesEnum.USER) {
+    findOptions.$or.forEach((searchOption)  => {
+      searchOption.owner = user;
+    });
+  }
+
+  if (!options.search && user.role === userRolesEnum.USER) {
+    findOptions.owner = user;
+  }
+  const contacts = await Contact.find(findOptions);
+
+  return contacts;
+};
 
 /**
- * Get all contacts
- * @param {string} id 
+ * Get one contacts
+ * @param {string} id
  * @returns {Promise<Object>} contact
  */
 exports.getOneContactById = (id) => Contact.findById(id);
-
-

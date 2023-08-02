@@ -19,6 +19,7 @@ exports.checkContactId = tryCatchWrapper(async (req, res, next) => {
  */
 exports.checkCreateContactData = tryCatchWrapper(async (req, res, next) => {
   const { error, value } = validContacts.createValidContacts(req.body);
+  console.log(value);
   if (error) {
     console.log("Middlewar Error".yellow, error.message);
     throw new AppError(400, "Invalid user data");
