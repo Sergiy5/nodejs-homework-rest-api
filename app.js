@@ -16,7 +16,9 @@ const formatsLogger = app.get('env') === 'development' ? 'dev' : 'short'
 
 if (process.env.NODE_ENV === 'development') app.use(morgan(formatsLogger));
 
-const contactsRouter = require('./routes/api/contacts')
+const contactsRoutes = require('./routes/api/contacts')
+const authRoutes = require('./routes/api/authRoutes');
+
 /**
  * MONGODB CONNECTION=============================
  */
@@ -30,11 +32,12 @@ mongoose.connect(process.env.MONGO_URL).then((conn) =>
   })
 
 /**
- *  MIDDLEWARSE============================
+ *  MIDDLEWARES============================
  */
 app.use(cors())
 app.use(express.json())
-app.use('/api/contacts', contactsRouter)
+app.use('/api/contacts', contactsRoutes)
+app.use("/api/users", authRoutes);
 /**
  * Not found request handler.
  */
