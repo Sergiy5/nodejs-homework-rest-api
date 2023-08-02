@@ -93,7 +93,8 @@ exports.removingContact = async (id) => {
 /**
  * Get all contacts from data base
  * @param {Object} - search pagination, sort options
- * @returns {Promise<Contact[]>}
+ * @param {Object} user - owner
+ * @returns {Promise<Object>}
  */
 exports.allContacts = async (options, user) => {
   /**
@@ -102,6 +103,10 @@ exports.allContacts = async (options, user) => {
    */
   // const contacts = await Contact.find().populate('owner');
 
+  /**
+   * SEARCHING FEATURE ================
+   * serch by name or email
+   */
   const findOptions = options.search
     ? {
         $or: [
@@ -110,9 +115,9 @@ exports.allContacts = async (options, user) => {
         ],
       }
     : {};
-  
+
   if (options.search && user.role === userRolesEnum.USER) {
-    findOptions.$or.forEach((searchOption)  => {
+    findOptions.$or.forEach((searchOption) => {
       searchOption.owner = user;
     });
   }
@@ -120,9 +125,34 @@ exports.allContacts = async (options, user) => {
   if (!options.search && user.role === userRolesEnum.USER) {
     findOptions.owner = user;
   }
-  const contacts = await Contact.find(findOptions);
 
-  return contacts;
+  // INIT DATABASE QUERY ================
+  const contactsQuery = Contact.find(findOptions)
+
+  /**
+   * SORTING FEATURE =================
+   * sort order = 'ASC' || ''DESC
+   * .sort('name') || .sort('email')
+   */
+  contactsQuery.sort(`${options.order === 'DESC' ? '-' : ''}${options.sort || 'email'}`);
+  // PAGINATION FEATURE==============
+  // limit 10 of 100
+  // skip 10 - count of skip docs
+  
+  // page 1 = skip 0
+  // skip 2 = skip 10
+  // page 3 = skip 20
+
+  const paginationPage = options.page ? +options.page : 1;
+  const paginationLimit = options.limit ? +options.limit : 5;
+  const skip = (paginationPage - 1) * paginationLimit;
+
+  contactsQuery.skip(skip).limit(paginationLimit);
+ 
+  const contacts = await contactsQuery;
+  const total = await Contact.count(findOptions);
+
+  return {contacts, total};
 };
 
 /**
