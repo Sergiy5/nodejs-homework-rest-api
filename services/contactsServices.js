@@ -127,7 +127,8 @@ exports.allContacts = async (options, user) => {
   }
 
   // INIT DATABASE QUERY ================
-  const contactsQuery = Contact.find(findOptions)
+  // populate return owner whith selected fields
+  const contactsQuery = Contact.find(findOptions).populate({path: 'owner', select: 'name, email role'})
 
   /**
    * SORTING FEATURE =================

@@ -1,9 +1,8 @@
 require("colors");
 
+const ImageService = require("../../services/imageService");
 const { registerUser, loginUser, logoutUser } = require("../../services/userServices");
 const { tryCatchWrapper} = require("../../utils");
-
-
 
 exports.register = tryCatchWrapper(async(req, res) => {
  const {user} = await registerUser(req.body)
@@ -11,6 +10,7 @@ exports.register = tryCatchWrapper(async(req, res) => {
   res.status(201).json({
     email: user.email,
     subscription: user.subscription,
+    avatar: user.avatar,
   });
 });
 
@@ -43,3 +43,27 @@ exports.getMe = (req, res) => {
     user: req.user,
   })
 };
+
+
+exports.updateMe = tryCatchWrapper( async(req, res) => {
+  const { user, file } = req;
+
+  if (file) {
+    user.avatar = await ImageService.save(
+      file,
+      {
+        height: 250, with: 250, maxSize: 2 * 1024 * 1024
+      },
+      "avatars",
+      "users",
+      user.id
+    );
+  }
+  Object.keys(req.body).forEach((key) => {
+    user[key] = req.body[key];
+  });
+  const updatedUser = await user.save();
+  res.status(200).json({
+    user: updatedUser,
+  })
+})
