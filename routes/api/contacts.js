@@ -13,7 +13,7 @@ const {
   checkCreateContactData,
   checkUpdateContactData,
 } = require("../../middlewars/contacts/contactsMiddlewars");
-// const userRolesEnum = require("../../cntacts/userRolesEnum");
+// const userRolesEnum = require("../../users/userRolesEnum");
 
 // const {
 //   listContacts,
@@ -22,9 +22,7 @@ const {
 //   addContact,
 //   updateContact,
 //   updateStatusContact,
-// } = require("../../controllers/contacts");
-
-
+// } = require("../../controllers/contacts"); 
 
 const router = express.Router();
 

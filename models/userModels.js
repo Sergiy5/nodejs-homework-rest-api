@@ -1,6 +1,6 @@
 const { model, Schema } = require('mongoose');
 const bcrypt = require("bcrypt");
-const userRolesEnum = require("../cntacts/userRolesEnum");
+const userRolesEnum = require("../users/userRolesEnum");
 const crypto = require('crypto');
 require("colors");
 
@@ -33,7 +33,7 @@ const userSchema = new Schema(
       enum: Object.values(userRolesEnum),
       default: userRolesEnum.USER,
     },
-    avatar: String,
+    avatarURL: String,
     token: String,
   },
   {
@@ -54,7 +54,7 @@ userSchema.pre("save", async function (next) {
   if (this.isNew) {
     const emailHash = crypto.createHash('md5').update(this.email).digest('hex');
     
-    this.avatar = `https:www.gravatar.com/avatar/${emailHash}.jpg?d=monsterid`;
+    this.avatarURL = `https:www.gravatar.com/avatar/${emailHash}.jpg?d=monsterid`;
   }
   if (!this.isModified("password")) return next();
   
@@ -70,7 +70,6 @@ userSchema.pre("save", async function (next) {
  * @returns {Promise<boolean}
  */
 userSchema.methods.checkPassword = (candidate, hash) => {
-  console.log("candidate, hash".blue, candidate, hash);
   bcrypt.compare(candidate, hash);
 };
 

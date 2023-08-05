@@ -6,11 +6,12 @@ const { tryCatchWrapper} = require("../../utils");
 
 exports.register = tryCatchWrapper(async(req, res) => {
  const {user} = await registerUser(req.body)
-
+  console.log("user Controller".blue, user);
+  
   res.status(201).json({
     email: user.email,
     subscription: user.subscription,
-    avatar: user.avatar,
+    avatar: user.avatarURL,
   });
 });
 
@@ -49,10 +50,10 @@ exports.updateMe = tryCatchWrapper( async(req, res) => {
   const { user, file } = req;
 
   if (file) {
-    user.avatar = await ImageService.save(
+    user.avatarURL = await ImageService.save(
       file,
       {
-        height: 250, with: 250, maxSize: 2 * 1024 * 1024
+        height: 250, width: 250
       },
       "avatars",
       "users",
@@ -63,6 +64,7 @@ exports.updateMe = tryCatchWrapper( async(req, res) => {
     user[key] = req.body[key];
   });
   const updatedUser = await user.save();
+
   res.status(200).json({
     user: updatedUser,
   })

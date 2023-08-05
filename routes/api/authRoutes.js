@@ -30,6 +30,9 @@ router.use(protect);
  * Важлива послідовність мідлварсів
  */
 router.get("/current", getMe);
-router.patch('/update-me', uploadUserAvatar, updateMe)
+/**
+ * Update user all fields
+ */
+router.patch('/update-user', uploadUserAvatar, updateMe)
 
 module.exports = router;

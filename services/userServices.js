@@ -3,7 +3,7 @@ const bcrypt = require("bcrypt");
 const { AppError } = require("../utils");
 const User = require("../models/userModels");
 const { signToken, checkToken } = require("./jwtService");
-const userRolesEnum = require("../cntacts/userRolesEnum");
+const userRolesEnum = require("../users/userRolesEnum");
 
 /**
  * Check user exisit

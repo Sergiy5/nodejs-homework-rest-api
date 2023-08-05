@@ -1,7 +1,7 @@
 const { Types } = require("mongoose");
 const { AppError } = require("../utils");
 const Contact = require("../models/contactsModels");
-const userRolesEnum = require("../cntacts/userRolesEnum");
+const userRolesEnum = require("../users/userRolesEnum");
 
 /**
  * Check Contact exisit

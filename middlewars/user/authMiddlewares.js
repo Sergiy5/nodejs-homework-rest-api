@@ -89,4 +89,4 @@ exports.allowFor =
 //     },
 // }).single('avatar')
 
-exports.uploadUserAvatar = ImageService.initUploadMiddlware('avatars');
+exports.uploadUserAvatar = ImageService.initUploadMiddlware('avatar');
