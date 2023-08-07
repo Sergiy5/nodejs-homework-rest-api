@@ -39,14 +39,14 @@ exports.logout = tryCatchWrapper(async (req, res, next) => {
 /**
  * Get logged in user data. 
  */
-exports.getMe = (req, res) => {
+exports.getUser = (req, res) => {
   res.status(200).json({
     user: req.user,
   })
 };
 
 
-exports.updateMe = tryCatchWrapper( async(req, res) => {
+exports.updateUser = tryCatchWrapper( async(req, res) => {
   const { user, file } = req;
 
   if (file) {
