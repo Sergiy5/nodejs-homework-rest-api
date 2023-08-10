@@ -1,3 +1,4 @@
+const ImageService = require('../../services/imageService')
 const { checkToken } = require("../../services/jwtService");
 const { usertExist, getUserById } = require("../../services/userServices");
 const { tryCatchWrapper, AppError, validUserData } = require("../../utils");
@@ -56,4 +57,36 @@ exports.allowFor =
   (req, res, next) => {
     if (roles.includes(req.user.role)) return next();
     next(new AppError(403, "You are not allowed to perform this action"));
-  };
+    };
+  
+// Multer config storage example =========================
+
+// const multerStorage = multer.diskStorage({
+//   destination: (req, file, cbk) => {
+//     cbk(null, 'static/avatars')
+//   },
+//   filename: (req, file, cbk) => {
+//     const extension = file.mimetype.split('/')[1];
+//     cbk(null, `${req.user.id}-${uuid()}.${extension}`)
+//   }
+// });
+
+// // Config multer filter
+// const multerFilter = (req, file, cbk) => {
+//   // 'image/*'
+//   if (file.mimetype.startsWith('image/')) {
+//     cbk(null.true);
+//   } else {
+//     cbk(new AppError(400, 'Pleas, upload image only!'), false)
+//   }
+// }
+
+// exports.uploadUserAvatar = multer({
+//   storage: multerStorage,
+//   filter: multerFilter,
+//     limits: {
+//     fileSize: 1 * 1024 * 1024,
+//     },
+// }).single('avatar')
+
+exports.uploadUserAvatar = ImageService.initUploadMiddlware('avatar');
