@@ -4,10 +4,8 @@ const userRolesEnum = require("../users/userRolesEnum");
 const crypto = require('crypto');
 require("colors");
 
-
-
-
 // const { hashingPassword } = require('../services/passwordServices');
+
 /**
  * User Model
  */
@@ -33,8 +31,18 @@ const userSchema = new Schema(
       enum: Object.values(userRolesEnum),
       default: userRolesEnum.USER,
     },
-    avatarURL: String,
+    verify: {
+      type: Boolean,
+      default: false,
+    },
+    verificationToken: {
+      type: String,
+      // required: [true, "Verify token is required"],
+    },
     token: String,
+    avatarURL: String,
+    passwordResetToken: String,
+    passwordResetExpires: Date,
   },
   {
     /**
@@ -72,6 +80,16 @@ userSchema.pre("save", async function (next) {
 userSchema.methods.checkPassword = (candidate, hash) => {
   bcrypt.compare(candidate, hash);
 };
+
+userSchema.methods.createPasswordResetToken = function () {
+  const resetToken = crypto.randomBytes(32).toString('hex');
+
+  this.passwordResetToken = crypto.createHash('sha256').update(resetToken).digest('hex');
+  // 10 * 60 * 1000 ---10 minutes
+  this.passwordResetExpires = Date.now() + 10 * 60 * 1000;
+
+  return resetToken;
+}
 
 const User = model("User", userSchema);
 

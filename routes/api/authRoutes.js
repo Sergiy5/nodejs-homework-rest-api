@@ -4,6 +4,7 @@ const {
   uploadUserAvatar,
   checkRegisterUserData,
   checkUserLoginData,
+  checkUserEmailData,
 } = require("../../middlewars/user/authMiddlewares");
 const {
   getUser,
@@ -11,6 +12,10 @@ const {
   updateUser,
   register,
   login,
+  forgotPassword,
+  resetPassword,
+  varifyUser,
+  resendVerificationEmail,
 } = require("../../controllers/user/authControllers");
 
 const router = Router();
@@ -28,7 +33,19 @@ router.post("/register", checkRegisterUserData, register);
  // logout user==========================================
 router.post("/logout", logout)
 
-// Protect all users=====================================
+// find user andsend password OTP by email to restore password
+router.post('/forgot-password', forgotPassword);
+
+// udate password in DB=================================
+router.patch('/reset-password/:otp', resetPassword);
+
+// Varify user by token =========================================
+router.get('/verify/:verificationToken', varifyUser);
+
+// Resend email for verifiction =======================================
+router.post("/verify", checkUserEmailData, resendVerificationEmail); 
+
+// Protect all users!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 router.use(protect);
 
 router.get("/current", getUser);

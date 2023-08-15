@@ -1,5 +1,7 @@
 require("colors");
+const uuid = require("uuid");
 const bcrypt = require("bcrypt");
+const crypto = require("crypto");
 const { AppError } = require("../utils");
 const User = require("../models/userModels");
 const { signToken, checkToken } = require("./jwtService");
@@ -29,10 +31,12 @@ exports.registerUser = async (userData) => {
   const newUserData = {
     ...userData,
     role: userRolesEnum.USER,
+    verificationToken: signToken(uuid.v4()),
   };
   const newUser = await User.create(newUserData);
  
   newUser.password = undefined;
+
   return { user: newUser };
 };
 
@@ -43,12 +47,14 @@ exports.registerUser = async (userData) => {
  */
 exports.loginUser = async ({ email, password }) => {
   /**
-   * Коли в моделі на паролі в моделі стоїть 'select:false' тоді в "ручну"
+   * Коли в моделі на паролі стоїть 'select:false' тоді в "ручну"
    *  через select дістаємо пароль щоб його перевірити.
    * Ще варіанти перелічити або відняти "-"
    */
   const user = await User.findOne({ email }).select("+password");
-
+  
+  if (user.verify === false) throw new AppError(401, "Verification error");
+    
   if (!user) throw new AppError(401, "Email or password is wrong");
 
   // const passwordIsValid = await user.checkPassword(password, user.password);
@@ -62,8 +68,23 @@ exports.loginUser = async ({ email, password }) => {
 
   return {user};
 }
+
 /**
- * Get one user
+ * Get user by token
+ * @param {string} token 
+ * @returns {Object}
+ */
+exports.getUserByVerifyToken = async (token) => {
+  const { verifycationToken } = token;
+
+  const user = await User.findOne({ verifycationToken });
+ 
+  return user;
+}
+
+
+/**
+ * Get one user by ID
  * @param {string} id 
  * @returns {Object}
  */
@@ -88,3 +109,39 @@ exports.logoutUser = async (req) => {
 
   return currentUser.save();
 };
+
+/**
+ * Find user by email
+ * @param {string} email - user email
+ * @returns {Promise<User>}
+ */
+exports.getUserByEmail = async (email) => {
+  const user = await User.findOne(email);
+  console.log("user", user);
+
+  return user;
+};
+
+/**
+ * Reset password
+ */
+exports.resetUserPassword = async (otp, password) => {
+  const hashedToken = crypto.createHash('sha256').update(otp).digest('hex');
+  const user = await User.findOne({
+    passwordResetToken: hashedToken,
+    // $gt--- greater then
+    passwordResetExpires: {$gt: Date.now()}
+  })
+
+  if (!user) throw new AppError(400, 'Token is invalid');
+  
+  user.password = password;
+  user.passwordResetToken = undefined;
+  user.passwordResetExpires = undefined;
+
+  await user.save();
+
+  user.password = undefined;
+
+  return user
+}

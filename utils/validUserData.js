@@ -10,3 +10,10 @@ exports.registerValidUser = (data) =>
       subscription: Joi.string(),
     })
     .validate(data);
+
+exports.validUserEmail = (email) =>
+  Joi.object()
+    .keys({
+      email: Joi.string().email().required(),
+    })
+    .validate(email);

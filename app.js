@@ -3,6 +3,7 @@ const morgan = require('morgan')
 const dotenv = require('dotenv');
 const cors = require('cors')
 const mongoose = require('mongoose')
+const path = require('path');
 const app = express()
 
 const envPath =
@@ -15,6 +16,9 @@ dotenv.config({ path: envPath })
 const formatsLogger = app.get('env') === 'development' ? 'dev' : 'short'
 
 if (process.env.NODE_ENV === 'development') app.use(morgan(formatsLogger));
+
+app.set('view engine', 'pug');
+app.set('views', path.join(__dirname, 'views'));
 
 const contactsRoutes = require('./routes/api/contacts')
 const authRoutes = require('./routes/api/authRoutes');

@@ -28,7 +28,16 @@ exports.checkUserLoginData = tryCatchWrapper(async (req, res, next) => {
   next();
 });
 
-
+exports.checkUserEmailData = tryCatchWrapper(async (req, res, next) => {
+  const { error, value } = validUserData.validUserEmail(req.body);
+  if (error) {
+    console.log("Middlewar Error".yellow, error.message);
+    throw new AppError(400, error.message);
+  }
+  
+  req.body = value;
+  next();
+});
 
 exports.protect = tryCatchWrapper(async (req, res, next) => {
   const token =
