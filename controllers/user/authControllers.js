@@ -1,5 +1,4 @@
 require("colors");
-// const nodemailer = require('nodemailer');
 const Email = require("../../services/emailService");
 const ImageService = require("../../services/imageService");
 const {
@@ -59,13 +58,11 @@ exports.varifyUser = tryCatchWrapper(async (req, res) => {
 }) 
 
 /**
- * Resend email
+ * Resend email ====================================================
  */
 exports.resendVerificationEmail = tryCatchWrapper(async (req, res) => {
-  console.log("req.body", req.body);
+  const user = await getUserByEmail(req.body.email);
 
-  const  user  = await getUserByEmail(req.body);
-  console.log(user)
   if (user.verify === true) {
     return res
       .status(400)
@@ -114,7 +111,7 @@ exports.logout = tryCatchWrapper(async (req, res, next) => {
 });
 
 /**
- * Get logged in user data =========================
+ * Get logged in user data ===============================
  */
 exports.getUser = (req, res) => {
   res.status(200).json({

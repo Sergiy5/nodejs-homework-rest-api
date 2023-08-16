@@ -115,10 +115,12 @@ exports.logoutUser = async (req) => {
  * @param {string} email - user email
  * @returns {Promise<User>}
  */
-exports.getUserByEmail = async (email) => {
-  const user = await User.findOne(email);
-  console.log("user", user);
+exports.getUserByEmail = async ( email ) => {
+  
+  const user = await User.findOne({email});
 
+  if (!user) throw new AppError(404, 'Not found')
+  
   return user;
 };
 
