@@ -2,17 +2,32 @@
   "name": "template",
   "version": "0.0.0",
   "private": true,
+  "homepage": "https://Sergiy5.github.io/nodejs-homework-rest-api",
   "scripts": {
     "start": "cross-env NODE_ENV=production node ./server.js",
-    "start:dev": "cross-env NODE_ENV=development nodemon ./server.js",
+    "dev": "cross-env NODE_ENV=development nodemon ./server.js",
     "lint": "eslint **/*.js",
     "lint:fix": "eslint --fix **/*.js"
   },
   "dependencies": {
+    "bcrypt": "^5.1.0",
+    "colors": "^1.4.0",
     "cors": "2.8.5",
     "cross-env": "7.0.3",
+    "dotenv": "^16.3.1",
     "express": "4.17.1",
-    "morgan": "1.10.0"
+    "fs-extra": "^11.1.1",
+    "html-to-text": "^9.0.5",
+    "jimp": "^0.22.10",
+    "joi": "^17.9.2",
+    "jsonwebtoken": "^9.0.1",
+    "mongoose": "^7.4.0",
+    "morgan": "1.10.0",
+    "multer": "^1.4.5-lts.1",
+    "nodemailer": "^6.9.4",
+    "pug": "^3.0.2",
+    "sharp": "^0.32.4",
+    "uuid": "^9.0.0"
   },
   "devDependencies": {
     "eslint": "7.19.0",
@@ -21,6 +36,6 @@
     "eslint-plugin-import": "2.25.3",
     "eslint-plugin-node": "^11.1.0",
     "eslint-plugin-promise": "5.2.0",
-    "nodemon": "2.0.15"
+    "nodemon": "^3.0.1"
   }
 }
